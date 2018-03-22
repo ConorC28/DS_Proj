@@ -3,8 +3,12 @@
  */
 package client;
 
+import services.KettleService;
 import clientui.KettleUI;
+import serviceui.ServiceUI;
 
+import java.util.Timer;
+import java.util.TimerTask;
 /**
  * Bed Client.
  *
@@ -12,8 +16,11 @@ import clientui.KettleUI;
  */
 public class KettleClient extends Client {
 
+    private final String MAKEB = "Makeb";    
     private final String BOIL = "Boil";
+    private boolean isMakingB = false;
     private boolean isBoiling = false;
+    
 
     /**
      * Bed Client Constructor.
@@ -26,7 +33,7 @@ public class KettleClient extends Client {
     }
 
     /**
-     * sends a message to warm the bed.
+     * sends a message to boil the kettle.
      */
     public void boil() {
         if (!isBoiling) {
@@ -40,9 +47,38 @@ public class KettleClient extends Client {
         }
     }
 
+//    @Override
+//    public void updatePoll(String msg) {
+//        if (msg.equals("Kettle is 100% boiled.")) {
+//            isBoiling = false;
+//        }
+//    }
+    
+    public void makebedtea() {
+        
+        
+            if (!isMakingB) {
+                String a = sendMessage(MAKEB);
+                
+                if (a.equals(OK)) {
+                    isMakingB = true;
+                    ui.updateArea("Making bed tea.");
+                }
+            } else {
+                ui.updateArea("Already made your bed tea");
+            }
+        
+    }
+
     @Override
     public void updatePoll(String msg) {
-        if (msg.equals("Kettle is 100% boiled.")) {
+        if (msg.equals("Already made your bed tea.")) {
+            isMakingB = false;
+        }
+        else if (msg.equals("The kettle is not boiled enough.")){
+            isMakingB = false;
+        }
+        else if (msg.equals("Kettle is 100% boiled.")) {    // Include kettle update
             isBoiling = false;
         }
     }
